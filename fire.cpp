@@ -7,59 +7,46 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/imgproc/imgproc_c.h>
 #include <QApplication>
+#include <opencv2/core/mat.hpp>
+#include <iostream>
 
 fire::fire(QString path)
 {
-    // std::cout << "Current path is "  << '\n';
-    // QDir directory("Documents/Letters");
-    // QString path = directory.filePath("contents.txt");
-
-    // std::cout << QDir::currentPath().toUtf8().constData()  << '\n';
-    //std::string ss = QDir::currentPath().toUtf8().constData();
-    //cv::VideoCapture video(ss);
-    // Browsing from qt desktop.
-
-    std::cout << path.toUtf8().constData() << '\n';
-    // cv::VideoCapture video("D:/test_fire_2.mp4");
-
     cv::VideoCapture video(path.toUtf8().constData());
-    cv::Ptr<cv::BackgroundSubtractor> pMOG2;
-    pMOG2 = cv::createBackgroundSubtractorMOG2();
     if (!video.isOpened()) {
         std::cout << "Cannot open video" << std::endl;
         return;
     }
-
     cv::Mat originalFrame;
-    cv::Mat resultFrame;
-
+    cv::Mat blurFrame;
+    cv::Mat hsvFrame;
+    cv::Mat mask;
+    cv::Mat output;
+    int no_red = 0;
+    std::vector<int> lower = {18, 50, 50};
+    std::vector<int> upper = {35, 255, 255};
     cv::namedWindow("OriginalVideo", cv::WINDOW_AUTOSIZE);
-    cv::namedWindow("ResultVideo", cv::WINDOW_AUTOSIZE);
-
     std::vector<cv::Mat> channels;
 
-    while (1) {
-
+    while (true) {
         video >> originalFrame;
-
-        cv::medianBlur(originalFrame, resultFrame, 3);
-        cv::split(resultFrame, channels);
-        IplImage copy = cvIplImage(channels[2]);
-        IplImage* redChannelImg = &copy;
-        cvMaxS(redChannelImg, 150, redChannelImg);
-        cv::Mat temp = cv::cvarrToMat(redChannelImg);
-        pMOG2->apply(temp, temp);
+        cv::GaussianBlur(originalFrame, blurFrame, cv::Size(3, 3), 0); // Gaussian Blurring. In this method, instead of a box filter, a Gaussian kernel is used. It is done with the function
+        cv::cvtColor(blurFrame, hsvFrame, cv::COLOR_BGR2HSV); // convert colour RGB/BGR to HSV
+        cv::inRange(hsvFrame, lower, upper, mask); //
+        cv::bitwise_and(originalFrame,hsvFrame, output, mask); //
+        no_red = cv::countNonZero(mask);
+        if (no_red > 5000) {
+            std::cout << "Small Fire detected " << no_red << std::endl;
+        } else if (no_red > 10000) {
+            std::cout << "Big Fire detected " << no_red <<std::endl;
+        }
         channels.clear();
         cv::imshow("OriginalVideo", originalFrame);
-        cv::imshow("ResultVideo", temp);
         if (cv::waitKey(30) == 27) {
             break;
         }
     }
     cv::destroyAllWindows();
-    originalFrame.release();
-    resultFrame.release();
-    pMOG2.release();
     video.release();
     return;
 }
