@@ -1,4 +1,6 @@
 #include "fire.h"
+#include "opengl.h"
+#include "vectormotionanalysis.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QFileDialog>
@@ -20,13 +22,22 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     fileMenu = menuBar()->addMenu("&My Menu");
-    myAction = new QAction("&Open Video", this);
-    fileMenu->addAction(myAction);
-    connect(myAction, SIGNAL(triggered(bool)), this, SLOT(myActionFn()));
+    myFireAction = new QAction("&Open Video", this);
+    fileMenu->addAction(myFireAction);
+
+    myMotionVectorAction = new QAction("&Motion Vector Analysis", this);
+    fileMenu->addAction(myMotionVectorAction);
+
+    myOpenGLAction = new QAction("&OpenGL", this);
+    fileMenu->addAction(myOpenGLAction);
+
+    connect(myFireAction, SIGNAL(triggered(bool)), this, SLOT(myFire()));
+    connect(myMotionVectorAction, SIGNAL(triggered(bool)), this, SLOT(myMotionVector()));
+    connect(myOpenGLAction, SIGNAL(triggered(bool)), this, SLOT(myOpenGL()));
 
 }
 
-void MainWindow::myActionFn()
+void MainWindow::myFire()
 {
     // Find the logics of fire detection and print the report.
     QFileDialog dialog(this);
@@ -38,6 +49,26 @@ void MainWindow::myActionFn()
         filePaths = dialog.selectedFiles();
         fire(filePaths.at(0));
     }
+}
+
+void MainWindow::myMotionVector()
+{
+    QFileDialog dialog(this);
+    dialog.setWindowTitle("Open Video");
+    dialog.setFileMode(QFileDialog::AnyFile);
+    QStringList filePaths;
+
+    if (dialog.exec()) {
+        filePaths = dialog.selectedFiles();
+
+        vectorMotionAnalysis();
+    }
+
+}
+
+void MainWindow::myOpenGL()
+{
+    openGL();
 }
 
 

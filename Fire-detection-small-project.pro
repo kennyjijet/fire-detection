@@ -1,4 +1,5 @@
 QT       += core gui
+QT       += opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -26,11 +27,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     fire.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    opengl.cpp \
+    vectormotionanalysis.cpp
 
 HEADERS += \
     fire.h \
-    mainwindow.h
+    mainwindow.h \
+    opengl.h \
+    vectormotionanalysis.h
 
 FORMS += \
     mainwindow.ui

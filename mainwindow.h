@@ -28,11 +28,15 @@ private:
 
 private:
     QMenu *fileMenu;
-    QAction *myAction;
+    QAction *myFireAction;
+    QAction *myMotionVectorAction;
+    QAction *myOpenGLAction;
+
     QToolBar *fileToolBar;
 
 private slots:
-    void myActionFn();
-
+    void myFire();
+    void myMotionVector();
+    void myOpenGL();
 };
 #endif // MAINWINDOW_H
