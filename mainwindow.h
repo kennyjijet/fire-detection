@@ -38,5 +38,6 @@ private slots:
     void myFire();
     void myMotionVector();
     void myOpenGL();
+    QStringList openDiaglog();
 };
 #endif // MAINWINDOW_H
