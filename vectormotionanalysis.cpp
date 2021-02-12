@@ -40,6 +40,25 @@ void vectorMotionAnalysis::vectorMotionAnalysisFarneback(QString fileName)
             break;
         cvtColor(frame2, next, COLOR_BGR2GRAY);
         Mat flow(prvs.size(), CV_32FC2);
+        /*
+        prev	first 8-bit single-channel input image.
+        next	second input image of the same size and the same type as prev.
+        flow	computed flow image that has the same size as prev and type CV_32FC2.
+
+        pyr_scale parameter, specifying the image scale (<1) to build pyramids for each image; pyr_scale=0.5 means a classical pyramid,
+        where each next layer is twice smaller than the previous one.
+
+        levels number of pyramid layers including the initial image; levels=1 means that no extra layers are created and only the original images
+        winsize averaging window size; larger values increase the algorithm robustness to image noise and give more chances for fast motion detection, but yield more blurred motion field.
+        iterations	number of iterations the algorithm does at each pyramid level.
+        poly_n	size of the pixel neighborhood used to find polynomial expansion in each pixel; larger values mean that the image will be approximated with smoother surfaces, yielding more robust algorithm and more blurred motion field, typically poly_n =5 or 7.
+        poly_sigma	standard deviation of the Gaussian that is used to smooth derivatives used as a basis for the polynomial expansion; for poly_n=5, you can set poly_sigma=1.1, for poly_n=7, a good value would be poly_sigma=1.5.
+
+        flags	operation flags that can be a combination of the following:
+        OPTFLOW_USE_INITIAL_FLOW uses the input flow as an initial flow approximation.
+        OPTFLOW_FARNEBACK_GAUSSIAN uses the Gaussian winsize×winsize filter instead of a box filter of the same size for optical flow estimation; usually, this option gives z more accurate flow than with a box filter, at the cost of lower speed; normally, winsize for a Gaussian window should be set to a larger value to achieve the same level of robustness.
+
+        */
         calcOpticalFlowFarneback(prvs, next, flow, 0.8, 8, 20, 10, 5, 7, OPTFLOW_FARNEBACK_GAUSSIAN );
         // visualization.
         Mat flow_parts[2];
@@ -61,7 +80,6 @@ void vectorMotionAnalysis::vectorMotionAnalysisFarneback(QString fileName)
         cvtColor(hsv8, bgr, COLOR_HSV2BGR);
         add(frame2, bgr, result);
         imshow("frame2", result);
-        // imshow("Original", frame2);
         int keyboard = waitKey(30);
         if (keyboard == 'q' || keyboard == 27)
             break;
