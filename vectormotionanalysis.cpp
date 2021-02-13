@@ -9,7 +9,7 @@
 #include <QApplication>
 #include <opencv2/core/mat.hpp>
 #include <QApplication>
-#include <math.h>
+#include <cmath>
 
 using namespace cv;
 using namespace std;
@@ -40,6 +40,7 @@ void vectorMotionAnalysis::vectorMotionAnalysisFarneback(QString fileName)
             break;
         cvtColor(frame2, next, COLOR_BGR2GRAY);
         Mat flow(prvs.size(), CV_32FC2);
+
         /*
         prev	first 8-bit single-channel input image.
         next	second input image of the same size and the same type as prev.
@@ -57,8 +58,8 @@ void vectorMotionAnalysis::vectorMotionAnalysisFarneback(QString fileName)
         flags	operation flags that can be a combination of the following:
         OPTFLOW_USE_INITIAL_FLOW uses the input flow as an initial flow approximation.
         OPTFLOW_FARNEBACK_GAUSSIAN uses the Gaussian winsize×winsize filter instead of a box filter of the same size for optical flow estimation; usually, this option gives z more accurate flow than with a box filter, at the cost of lower speed; normally, winsize for a Gaussian window should be set to a larger value to achieve the same level of robustness.
-
         */
+
         calcOpticalFlowFarneback(prvs, next, flow, 0.8, 8, 20, 10, 5, 7, OPTFLOW_FARNEBACK_GAUSSIAN );
         // visualization.
         Mat flow_parts[2];
@@ -67,19 +68,26 @@ void vectorMotionAnalysis::vectorMotionAnalysisFarneback(QString fileName)
         cartToPolar(flow_parts[0], flow_parts[1], magnitude, angle, true);
         normalize(magnitude, magn_norm, 0.0f, 1.0f, NORM_MINMAX);
         angle *= ((1.f / 360.f) * (180.f / 255.f));
+        // angle *= 180 / M_PI / 2.f;
         Mat _hsv[3], hsv, hsv8, bgr, result;
         _hsv[0] = angle;
         _hsv[1] = Mat::ones(angle.size(), CV_32F);
         _hsv[2] = magn_norm;
-        double s = cv::sum(magn_norm)[0];
-        if (s > 15000) {
-            cout << "Fire detected" << endl;
-        }
         merge(_hsv, 3, hsv);
         hsv.convertTo(hsv8, CV_8U, 255.0);
         cvtColor(hsv8, bgr, COLOR_HSV2BGR);
         add(frame2, bgr, result);
         imshow("frame2", result);
+        double scalar = cv::sum(magn_norm)[0];
+        // Mat mask = Mat::zeros(next.size(), next.type());
+        // Norm of motion detection is higher than 12,000, maybe it is not fire.
+        if (scalar > 10000) {
+            // cout << magn_norm << endl;
+            cout << scalar << endl;
+            cout << "Motion detected" << endl;
+            // Is it fire?
+            imshow("fire", result);
+        }
         int keyboard = waitKey(30);
         if (keyboard == 'q' || keyboard == 27)
             break;
@@ -150,6 +158,15 @@ void vectorMotionAnalysis::vectorMotionAnalysisLucas(QString fileName)
 
 }
 
+
+// double scalar = cv::sum(magn_norm)[0];
+// Norm of motion detection is higher than 12,000, maybe it is not fire.
+// if (scalar > 12000) {
+    // cout << magn_norm << endl;
+//    cout << scalar << endl;
+//    cout << "Motion detected" << endl;
+    // Is it fire?
+//}
 
 /*
 Computes a dense optical flow using the Gunnar Farneback's algorithm.
