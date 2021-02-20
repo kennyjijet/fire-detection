@@ -60,7 +60,7 @@ void vectorMotionAnalysis::vectorMotionAnalysisFarneback(QString fileName)
         OPTFLOW_FARNEBACK_GAUSSIAN uses the Gaussian winsize×winsize filter instead of a box filter of the same size for optical flow estimation; usually, this option gives z more accurate flow than with a box filter, at the cost of lower speed; normally, winsize for a Gaussian window should be set to a larger value to achieve the same level of robustness.
         */
 
-        calcOpticalFlowFarneback(prvs, next, flow, 0.8, 8, 20, 10, 5, 7, OPTFLOW_FARNEBACK_GAUSSIAN );
+        calcOpticalFlowFarneback(prvs, next, flow, 0.8, 8, 20, 10, 5, 7, OPTFLOW_FARNEBACK_GAUSSIAN);
         // visualization.
         Mat flow_parts[2];
         split(flow, flow_parts);
