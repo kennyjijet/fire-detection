@@ -69,24 +69,25 @@ void vectorMotionAnalysis::vectorMotionAnalysisFarneback(QString fileName)
         normalize(magnitude, magn_norm, 0.0f, 1.0f, NORM_MINMAX);
         angle *= ((1.f / 360.f) * (180.f / 255.f));
         // angle *= 180 / M_PI / 2.f;
-        Mat _hsv[3], hsv, hsv8, bgr, result;
+        Mat _hsv[3], hsv, hsv8, bgr, capture, result;
         _hsv[0] = angle;
         _hsv[1] = Mat::ones(angle.size(), CV_32F);
         _hsv[2] = magn_norm;
         merge(_hsv, 3, hsv);
         hsv.convertTo(hsv8, CV_8U, 255.0);
         cvtColor(hsv8, bgr, COLOR_HSV2BGR);
-        add(frame2, bgr, result);
-        imshow("frame2", result);
+        add(frame2, bgr, capture);
+        imshow("frame2", capture);
         double scalar = cv::sum(magn_norm)[0];
-        // Mat mask = Mat::zeros(next.size(), next.type());
-        // Norm of motion detection is higher than 12,000, maybe it is not fire.
         if (scalar > 10000) {
-            // cout << magn_norm << endl;
             cout << scalar << endl;
             cout << "Motion detected" << endl;
             // Is it fire?
-            imshow("fire", result);
+            // detect with shape or something.
+            imshow("fire", capture);
+            cvtColor(frame2, frame2, COLOR_BGR2GRAY);
+            cv::threshold(frame2, result, 147, 255,cv::THRESH_BINARY);
+            imshow("Check fire", result);
         }
         int keyboard = waitKey(30);
         if (keyboard == 'q' || keyboard == 27)
@@ -157,7 +158,12 @@ void vectorMotionAnalysis::vectorMotionAnalysisLucas(QString fileName)
     }
 
 }
+/*
 
+        // Mat mask = Mat::zeros(next.size(), next.type());
+        // Norm of motion detection is higher than 12,000, maybe it is not fire.
+        // prev(y,x)∼next(y+flow(y,x)[1],x+flow(y,x)[0])
+*/
 
 // double scalar = cv::sum(magn_norm)[0];
 // Norm of motion detection is higher than 12,000, maybe it is not fire.
