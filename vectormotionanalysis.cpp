@@ -85,8 +85,7 @@ void vectorMotionAnalysis::vectorMotionAnalysisFarneback(QString fileName)
             // Is it fire?
             // detect with shape or something.
             imshow("fire", capture);
-            cvtColor(frame2, frame2, COLOR_BGR2GRAY);
-            cv::threshold(frame2, result, 147, 255,cv::THRESH_BINARY);
+            cv::threshold(next, result, 147, 255, cv::THRESH_BINARY);
             imshow("Check fire", result);
         }
         int keyboard = waitKey(30);
@@ -158,11 +157,17 @@ void vectorMotionAnalysis::vectorMotionAnalysisLucas(QString fileName)
     }
 
 }
+
+
+
+
+
+
 /*
 
-        // Mat mask = Mat::zeros(next.size(), next.type());
-        // Norm of motion detection is higher than 12,000, maybe it is not fire.
-        // prev(y,x)∼next(y+flow(y,x)[1],x+flow(y,x)[0])
+// Mat mask = Mat::zeros(next.size(), next.type());
+// Norm of motion detection is higher than 12,000, maybe it is not fire.
+// prev(y,x)∼next(y+flow(y,x)[1],x+flow(y,x)[0])
 */
 
 // double scalar = cv::sum(magn_norm)[0];
@@ -196,10 +201,7 @@ Note
 An example using the optical flow algorithm described by Gunnar Farneback can be found at opencv_source_code/samples/cpp/fback.cpp
 (Python) An example using the optical flow algorithm described by Gunnar Farneback can be found at opencv_source_code/samples/python/opt_flow.py
 
-
 */
-
-
 
 // _hsv[1] = 255;
 // angle *= 180/(2 * acos(0.0))/2;
