@@ -33,6 +33,10 @@ void vectorMotionAnalysis::vectorMotionAnalysisFarneback(QString fileName)
     Mat frame1, prvs;
     capture >> frame1;
     cvtColor(frame1, prvs, COLOR_BGR2GRAY);
+    vector<vector<Point> > contours;
+    vector<vector<Point> > poly;
+    vector<Vec4i> hierarchy;
+    vector<vector<Point> > contours0;
     while(true) {
         Mat frame2, next;
         capture >> frame2;
@@ -83,10 +87,27 @@ void vectorMotionAnalysis::vectorMotionAnalysisFarneback(QString fileName)
             cout << scalar << endl;
             cout << "Motion detected" << endl;
             // Is it fire?
+            // magn_norm
+            // cout << "magn_norm" << magn_norm << endl;
             // detect with shape or something.
             imshow("fire", capture);
             cv::threshold(next, result, 147, 255, cv::THRESH_BINARY);
             imshow("Check fire", result);
+            findContours(result, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
+            contours.resize(contours.size());
+            for (size_t i = 0; i < contours.size(); ++i) {
+                Mat tmp;
+                // You can try more different parameters
+                approxPolyDP(contours[i], tmp, 3, true);
+                poly.push_back(tmp);
+            }
+
+            Mat cnt_img = Mat::zeros( 500, 500, CV_8UC3);
+            for (size_t i = 0; i < contours.size(); ++i) {
+                drawContours(cnt_img, poly, i, {255, 255, 255}, 1, 8, hierarchy, 0);
+            }
+            imshow("contours fire", cnt_img);
+
         }
         int keyboard = waitKey(30);
         if (keyboard == 'q' || keyboard == 27)
