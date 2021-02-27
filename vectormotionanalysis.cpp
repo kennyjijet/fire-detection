@@ -88,7 +88,7 @@ void vectorMotionAnalysis::vectorMotionAnalysisFarneback(QString fileName)
             cout << "Motion detected" << endl;
             // Is it fire?
             // magn_norm
-            // cout << "magn_norm" << magn_norm << endl;
+            cout << "magn_norm" << magn_norm << endl;
             // detect with shape or something.
             imshow("fire", capture);
             cv::threshold(next, result, 147, 255, cv::THRESH_BINARY);
@@ -181,7 +181,9 @@ void vectorMotionAnalysis::vectorMotionAnalysisLucas(QString fileName)
 
 
 
-
+/*
+    No need to go below just Backup code.
+*/
 
 
 /*
